@@ -64,3 +64,154 @@ FROM employee_demographics
 GROUP BY gender) AS Agg_Table
 GROUP BY gender
 ;
+
+
+
+
+
+---(### **Subqueries in SQL**
+
+A **subquery** (or inner query) is a query nested within another query (the outer query). Subqueries are used to perform intermediate calculations or retrieve data that can be used in the main query.
+
+---
+
+### **Types of Subqueries**
+1. **Single-Value Subqueries**  
+   Returns a single value (scalar) for use in a comparison or calculation.
+2. **Multi-Value Subqueries**  
+   Returns multiple rows or values for use with `IN`, `ANY`, or `ALL`.
+3. **Table Subqueries**  
+   Returns a complete table, often used in the `FROM` clause.
+4. **Correlated Subqueries**  
+   References columns from the outer query, evaluating for each row.
+
+---
+
+### **1. Single-Value Subquery**
+- A subquery that returns a single value (e.g., a number or string).  
+- Typically used with comparison operators like `=`, `<`, `>`, etc.
+
+**Example:**
+Find employees whose salary is greater than the average salary.
+```sql
+SELECT employee_name, salary
+FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+```
+
+---
+
+### **2. Multi-Value Subquery**
+- A subquery that returns multiple values, often used with operators like `IN`, `ANY`, or `ALL`.
+
+**Example with `IN`:**  
+Find employees who belong to departments located in "New York" or "San Francisco."
+```sql
+SELECT employee_name, department_id
+FROM employees
+WHERE department_id IN (
+    SELECT department_id
+    FROM departments
+    WHERE location IN ('New York', 'San Francisco')
+);
+```
+
+**Example with `ANY`:**  
+Find employees whose salary is greater than the salary of **any** employee in department 2.
+```sql
+SELECT employee_name, salary
+FROM employees
+WHERE salary > ANY (
+    SELECT salary
+    FROM employees
+    WHERE department_id = 2
+);
+```
+
+---
+
+### **3. Table Subquery**
+- A subquery that returns a full table, often used in the `FROM` clause.  
+- Requires an alias to refer to the subquery's results.
+
+**Example:**
+Find the average salary for each department, then list departments where the average salary exceeds 50,000.
+```sql
+SELECT department_id, avg_salary
+FROM (
+    SELECT department_id, AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department_id
+) AS dept_avg
+WHERE avg_salary > 50000;
+```
+
+---
+
+### **4. Correlated Subquery**
+- A subquery that references columns from the outer query.
+- Evaluates row-by-row for the outer query.
+
+**Example:**
+Find employees whose salary is greater than the average salary of their department.
+```sql
+SELECT employee_name, salary, department_id
+FROM employees e1
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees e2
+    WHERE e1.department_id = e2.department_id
+);
+```
+
+---
+
+### **Subquery Placement**
+Subqueries can appear in various parts of a query:
+
+1. **In the SELECT Clause**  
+   Used to calculate derived values for each row.
+   ```sql
+   SELECT employee_name, salary,
+          (SELECT AVG(salary) FROM employees) AS avg_salary
+   FROM employees;
+   ```
+
+2. **In the WHERE Clause**  
+   Filters rows based on the result of a subquery.
+   ```sql
+   SELECT employee_name
+   FROM employees
+   WHERE department_id = (
+       SELECT department_id
+       FROM departments
+       WHERE department_name = 'HR'
+   );
+   ```
+
+3. **In the FROM Clause**  
+   Acts as a derived table.
+   ```sql
+   SELECT employee_name, avg_salary
+   FROM (
+       SELECT department_id, AVG(salary) AS avg_salary
+       FROM employees
+       GROUP BY department_id
+   ) AS dept_avg
+   JOIN employees ON employees.department_id = dept_avg.department_id;
+   ```
+
+---
+
+### **Key Points**
+1. Subqueries **must return a compatible value** or structure for their context (e.g., a scalar value for comparison or a list for `IN`).
+2. Use **aliases** to reference subquery results in the outer query.
+3. **Correlated subqueries** can be slower because they run for each row of the outer query.
+
+---
+
+### **Performance Tips**
+- Use **joins** instead of subqueries when possible for better performance.
+- Ensure proper indexing to optimize subquery execution.
+- Avoid subqueries in the `WHERE` clause if a derived table or join can achieve the same result.
+)---
