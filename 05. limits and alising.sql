@@ -12,7 +12,7 @@ LIMIT 3;
 SELECT *
 FROM employee_demographics
 ORDER BY first_name
-LIMIT 3;
+LIMIT 3; 
 
 -- now there is an additional paramater in limit which we can access using a comma that specifies the starting place
 
