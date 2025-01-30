@@ -1,4 +1,4 @@
--- Group By
+ -- Group By
 -- When you use the GROUP BY clause in a MySQL query, it groups together rows that have the same values in the specified column or columns.
 -- GROUP BY is going to allow us to group rows that have the same data and run aggregate functions on them
 
