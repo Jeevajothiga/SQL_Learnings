@@ -5,7 +5,7 @@
 -- for example we have these 2 tables, invoice and payments - when a client makes a payment we want it to update the invoice field "total paid"
 -- to reflect that the client has indeed paid their invoice
 
-
+  
 SELECT * FROM employee_salary;
 
 SELECT * FROM employee_demographics;
